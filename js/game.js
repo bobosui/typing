@@ -38,21 +38,32 @@ function endGame() {
     clearInterval(placeLetterTimer);
     document.removeEventListener('keydown', keyboardInput);
     message.classList.remove("hidden");
-    resetButton.classList.remove("disabled")
+    resetButton.classList.add("disabled");
+    startButton.lastChild.nodeValue = "Start";
 }
 
 
+function pauseGame(){
+    if (pauseButton.lastChild.nodeValue == "Pause"){
+        // pause
+        clearInterval(placeLetterTimer);
+        clearInterval(moveLettersTimer);
+        pauseButton.lastChild.nodeValue = "Resum";
+    }else{
+        // resume
+        moveLettersTimer = setInterval(moveLetters, 100);
+        placeLetterTimer = setInterval(placeLetter, 500);
+        pauseButton.lastChild.nodeValue = "Pause";
+    }
+}
 function resetGame() {
     message.classList.add("hidden");
-    resetButton.classList.add("disabled")
     score.innerHTML = 0;
 
     var boxes = document.querySelectorAll("#box > div");
     for (var i = 0; i < boxes.length; i++) {
         boxes[i].remove();
     }
-
-    startGame();
 }
 
 function keyboardInput() {
@@ -75,10 +86,19 @@ function keyboardInput() {
 
 
 function startGame() {
-    placeLetterTimer = setInterval(placeLetter, placeLetterInterval);
-    moveLettersTimer = setInterval(moveLetters, 100);
-    document.addEventListener('keydown', keyboardInput);
-    startButton.classList.add("disabled");
+    if (startButton.lastChild.nodeValue == "Start")
+    {
+        resetGame();
+        placeLetterTimer = setInterval(placeLetter, placeLetterInterval);
+        moveLettersTimer = setInterval(moveLetters, 100);
+        document.addEventListener('keydown', keyboardInput);
+        resetButton.classList.remove("disabled")
+        startButton.lastChild.nodeValue = "Stop ";
+    }else{
+        endGame();
+        resetGame();
+    }
+    
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
@@ -90,6 +110,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     startButton = document.getElementById('start')
     startButton.onclick = startGame;
+
+    pauseButton = document.getElementById('pause')
+    pauseButton.onclick = pauseGame;
 
     resetButton = document.getElementById('reset')
     resetButton.onclick = resetGame;
